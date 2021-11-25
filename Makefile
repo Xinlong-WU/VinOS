@@ -6,7 +6,7 @@ CFLAGS = -nostdlib -fno-builtin -march=rv32ima -mabi=ilp32 -g -Wall
 QEMU = qemu-system-riscv32
 QFLAGS = -nographic -smp 1 -machine virt -bios none
 
-GDB = ${CROSS_COMPILE}gdb
+GDB = gdb-multiarch
 CC = ${CROSS_COMPILE}gcc
 OBJCOPY = ${CROSS_COMPILE}objcopy
 OBJDUMP = ${CROSS_COMPILE}objdump
@@ -16,15 +16,17 @@ SRCS_ASM = \
 
 SRCS_C = \
 	kernel.c \
+	uart.c \
+	utils.h\
 
 OBJS = $(SRCS_ASM:.S=.o)
 OBJS += $(SRCS_C:.c=.o)
 
 .DEFAULT_GOAL := all
 all: os.elf
-	@[ -d "${BUILD_PATH}" ] || mkdir ${BUILD_PATH}
-	@mv *.o ${BUILD_PATH}/
-	@mv *.bin ${BUILD_PATH}/
+	# @[ -d "${BUILD_PATH}" ] || mkdir ${BUILD_PATH}
+	# @mv *.o ${BUILD_PATH}/
+	# @mv *.bin ${BUILD_PATH}/
 
 # start.o must be the first in dependency!
 os.elf: ${OBJS}
@@ -58,4 +60,10 @@ code: all
 clean:
 	rm -rf ${BUILD_PATH}
 	rm -rf *.elf
+	rm -rf *.o
 
+qemu:
+	@${QEMU} -M ? | grep virt >/dev/null || exit
+	@echo "Press Ctrl-A and then X to exit QEMU"
+	@echo "------------------------------------"
+	@${QEMU} ${QFLAGS} -kernel os.elf
