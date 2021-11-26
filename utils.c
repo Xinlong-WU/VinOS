@@ -1,4 +1,6 @@
-array itoaa(int num,array arr){
+#include "utils.h"
+#include "types.h"
+string itoaa(int num,string arr){
     int length = 0;
     int tmp = num;
     while(tmp > 0){

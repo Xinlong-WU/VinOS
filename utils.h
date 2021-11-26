@@ -1,6 +1,8 @@
+#include "types.h"
+
 #ifndef __UART_H__
 #define __UART_H__
 
-array itoaa(int num,array arr);
+string itoaa(int num,string arr);
 
 #endif /* __UART_H__ */

@@ -113,7 +113,7 @@ int putc(char ch){
 	return uart_write_reg(THR, ch);
 }
 
-void puts(array s){
+void puts(string s){
     if(s == NULL)
         return;
     while (*s) {
@@ -121,18 +121,18 @@ void puts(array s){
 	}
 }
 
-void print(array s){
+void print(string s){
 	puts(s);
 	putc('\n');
 }
 
-void printf_str(array s, array* param, int parac){
+void printf_str(string s, string* param, int parac){
 	if(s == NULL)
         return;
 	int isFormater = 0;
 	int formaterCounter = 0;
 	while (*s) {
-		array arr;
+		string arr;
 		if(!isFormater){
 			if(*s == '%'){
 				isFormater = 1;
