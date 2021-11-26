@@ -9,5 +9,6 @@ void print(string s);
 void printf_str(string s, string* param, int parac);
 
 char getc();
+void getLine(string strBuffer, int bufferSize);
 
 #endif /* __UART_H__ */

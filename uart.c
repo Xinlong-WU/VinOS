@@ -107,8 +107,6 @@ void uart_init(){
 }
 
 int putc(char ch){
-	if ((int)ch == 13)
-		ch = 10;
 	while ((uart_read_reg(LSR) & LSR_TX_IDLE) == 0);
 	return uart_write_reg(THR, ch);
 }
@@ -164,5 +162,37 @@ void printf_str(string s, string* param, int parac){
 
 char getc(){
 	while ((uart_read_reg(LSR) & LSR_RX_READY) == 0);
-	return (char)uart_read_reg(RHR);
+	char ch = (char)uart_read_reg(RHR);
+	if(ch == '\r')
+		ch = '\n';
+	if(ch == 127)
+		ch = '\b';
+
+	// write back
+	putc(ch);
+	if(ch == '\b'){
+		putc(' ');
+		putc('\b');
+	}
+		
+	return ch;
+}
+
+void getLine(string strBuffer, int bufferSize){
+	if (bufferSize > 200)
+		print("Error: bufferSize can not bigger then 200 * 4 bits");
+	
+	int charCounter = 0;
+	char ch;
+	while(charCounter < bufferSize){
+		ch = getc();
+		if(ch == '\n')
+			break;
+		if(ch == '\b'){
+			charCounter--;
+			continue;
+		}
+		strBuffer[charCounter++] = ch;
+	}
+	strBuffer[charCounter] = '\0';
 }

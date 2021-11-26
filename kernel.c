@@ -22,10 +22,17 @@ void start_kernel(void)
 	print("  |__|:|__/:/    \\  \\:\\         |__|::/     \\  \\:\\/:/     \\  \\:\\/:/  			");
 	print("   \\__\\::::/      \\__\\/         /__/:/       \\  \\::/       \\  \\::/   			");
 	print("       ~~~~                     \\__\\/         \\__\\/         \\__\\/    				");
-	char arr[20];
-
+	
+	char buffer[200];
 	while (1) {
-		char ch = getc();
-		putc(ch);
+		getLine(buffer, 200);
+		print(buffer);
+		if(strcpy(buffer,"shutdown") == 0){
+			print("ok, shutdown.\nbye~");
+			break;
+		}
+		// char ch = getc();
+		// itoa(ch, buffer);
+		// print(buffer);
 	}; // stop here!
 }
