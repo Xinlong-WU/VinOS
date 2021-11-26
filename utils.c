@@ -1,6 +1,6 @@
 #include "utils.h"
 #include "types.h"
-string itoaa(int num,string arr){
+string itoa(int num,string arr){
     int length = 0;
     int tmp = num;
     while(tmp > 0){
@@ -46,5 +46,6 @@ string itoaa(int num,string arr){
                 break;
         }
     }
+    arr[length]='\0';
     return arr;
 }
