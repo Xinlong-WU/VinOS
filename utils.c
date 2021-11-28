@@ -58,8 +58,8 @@ int strcpy(string str1,string str2){
     int res = 0;
     do{
         res = *p1 - *p2;
-        *p1++;
-        *p2++;
+        *p1+=1;
+        *p2+=1;
     }while(res ==0 && *(p1-1) != '\0' && *(p2-1) != '\0');
 
     if(res == 0){

@@ -3,12 +3,17 @@
 #ifndef __UART_H__
 #define __UART_H__
 
-int putc(char ch);
-void puts(string s);
-void print(string s);
-void printf_str(string s, string* param, int parac);
+/* uart */
+extern void uart_init();
+extern int putc(char ch);
+extern void puts(string s);
+extern void print(string s);
 
-char getc();
-void getLine(string strBuffer, int bufferSize);
+extern char getc();
+extern void getLine(string strBuffer, int bufferSize);
+
+/* printf */
+extern int  printf(const string s, ...);
+extern void panic(string s);
 
 #endif /* __UART_H__ */

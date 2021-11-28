@@ -1,15 +1,16 @@
-#include "kernel.h"
-#include "uart.h"
-#include "utils.h"
+#include "os.h"
+
 void start_kernel(void)
 {
+	uart_init();
+	print("init uart OK");
+
 	print("=========================================================================================");
 	print("Author: Vincent");
 	print("Github: https://github.com/Xinlong-WU/VinOS");
 	print("License: BSD-2-Clause License");
 	print("Date: 2021/11/25");
-	char *params[1] = {VERSION};
-	printf_str("Version: %s", params, 1);
+	printf("Version: %s\n", KERNEL_VERSION);
 	print("=========================================================================================");
 	print("                                 ___           ___           ___     					");
 	print("      ___            ___        /  /\\         /  /\\         /  /\\    					");
@@ -22,11 +23,12 @@ void start_kernel(void)
 	print("  |__|:|__/:/    \\  \\:\\         |__|::/     \\  \\:\\/:/     \\  \\:\\/:/  			");
 	print("   \\__\\::::/      \\__\\/         /__/:/       \\  \\::/       \\  \\::/   			");
 	print("       ~~~~                     \\__\\/         \\__\\/         \\__\\/    				");
+
+	
 	
 	char buffer[200];
 	while (1) {
 		getLine(buffer, 200);
-		print(buffer);
 		if(strcpy(buffer,"shutdown") == 0){
 			print("ok, shutdown.\nbye~");
 			break;
