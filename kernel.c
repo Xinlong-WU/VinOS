@@ -3,7 +3,7 @@
 void start_kernel(void)
 {
 	uart_init();
-	print("init uart OK");
+	print("-> init uart OK");
 
 	print("=========================================================================================");
 	print("Author: Vincent");
@@ -24,15 +24,21 @@ void start_kernel(void)
 	print("   \\__\\::::/      \\__\\/         /__/:/       \\  \\::/       \\  \\::/   			");
 	print("       ~~~~                     \\__\\/         \\__\\/         \\__\\/    				");
 
+	print("-> init Memoey...");
+	page_init();
+	page_test();
+	print("-> init Memoey...OK");
+
+
 	
-	
-	char buffer[200];
+	// char buffer[200];
 	while (1) {
-		getLine(buffer, 200);
-		if(strcpy(buffer,"shutdown") == 0){
-			print("ok, shutdown.\nbye~");
-			break;
-		}
+		getc();
+		// getLine(buffer, 200);
+		// if(strcpy(buffer,"shutdown") == 0){
+		// 	print("ok, shutdown.\nbye~");
+		// 	break;
+		// }
 		// char ch = getc();
 		// itoa(ch, buffer);
 		// print(buffer);

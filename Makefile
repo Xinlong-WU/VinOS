@@ -13,11 +13,13 @@ OBJDUMP = ${CROSS_COMPILE}objdump
 
 SRCS_ASM = \
 	start.S \
+	memInfo.S \
 
 SRCS_C = \
 	kernel.c \
 	uart.c \
-	utils.c\
+	utils.c \
+	memory.c \
 
 OBJS = $(SRCS_ASM:.S=.o)
 OBJS += $(SRCS_C:.c=.o)
