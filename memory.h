@@ -31,8 +31,7 @@ extern uint32_t HEAP_SIZE;
 #define PAGE_FIRST  (uint8_t)(1 << 2)
 #define PAGE_MALLOC  (uint8_t)(1 << 3) // is this page managed by malloc()
 
-#define PAGE_SOFT_LAST  (uint8_t)(1 << 4) // (Page Control Only) means there is still some memory controled by malloc() in next page
-#define PAGE_SOFT_FIRST  (uint8_t)(1 << 5) // (Malloc Control Only) means there is still some memory controled by page_alloc() in prev page 
+#define PAGE_SOFT_FIRST  (uint8_t)(1 << 4) // (Malloc Control Only) means there is still some memory controled by page_alloc() in prev page 
 // use 6th & 7th bit to count the memory usage.
 /*
  * Page Descriptor 

@@ -25,6 +25,11 @@ static inline void _set_flag(struct Page *page, uint8_t flags)
     page->flags |= flags;
 }
 
+static inline void _remove_flag(struct Page *page, uint8_t flags)
+{
+    page->flags &= !flags;
+}
+
 static inline int _is_last(struct Page *page)
 {
     return page->flags & PAGE_LAST;
@@ -485,12 +490,16 @@ void free(void *ptr){
             _decrease_memory_usage_of_malloc(mallocTable);
             mallocBlock++;
         }
+        // TBD: free whole page if it is empty
+        // use mallocBlock[820] & mallocBlock[819] store the usage count
+        if(_get_memory_usage_of_malloc(mallocTable) == 0){
+            _remove_flag(page,PAGE_MALLOC);
+            page_free(_get_page_memory(page));
+        }
     }
     else{
         page_free(ptr);
     }
-    // TBD: free whole page if it is empty
-    // use mallocBlock[820] store the use count
 }
 
 void molloc_test()
@@ -531,6 +540,11 @@ void molloc_test()
     printPageInfo(_get_page_table(),16);
     printf("Molloc Table:\n");
     printPageInfo(mallocTable, 40);
+
+    printf("free(p1);\n");
+    free(p1);
+    printf("Page Table:\n");
+    printPageInfo(_get_page_table(),16);
 
     printf("void * p2 = malloc(sizeof(short));\n");
     void * p2 = malloc(sizeof(short));
@@ -607,9 +621,6 @@ void molloc_test()
     printf("p9 = 0x%x\n", p9);
     printf("Molloc Table:\n");
     printPageInfo(mallocTable, 40);
-
-
-    
 
     printf("\n\n==============> END molloc_test <==============\n\n"); 
 }
