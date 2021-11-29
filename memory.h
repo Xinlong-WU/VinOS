@@ -23,6 +23,7 @@ extern uint32_t HEAP_SIZE;
 // ALLOCABLE_SIZE memory can be alloced in each page.
 // we use byte table which is 820B long to manage the rest memory(3276B) of this page.
 #define ALLOCABLE_SIZE 3276
+// the last block(820) is used to count the total memory of this page.
 #define MALLOC_TABLE_SIZE 820
 
 #define PAGE_TAKEN  (uint8_t)(1 << 0)
@@ -32,7 +33,7 @@ extern uint32_t HEAP_SIZE;
 
 #define PAGE_SOFT_LAST  (uint8_t)(1 << 4) // (Page Control Only) means there is still some memory controled by malloc() in next page
 #define PAGE_SOFT_FIRST  (uint8_t)(1 << 5) // (Malloc Control Only) means there is still some memory controled by page_alloc() in prev page 
-
+// use 6th & 7th bit to count the memory usage.
 /*
  * Page Descriptor 
  * flags:
