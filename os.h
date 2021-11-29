@@ -11,6 +11,6 @@
 #include <stddef.h>
 #include <stdarg.h>
 
-#define KERNEL_VERSION "0.1.2"
+#define KERNEL_VERSION "0.1.3"
 
 #endif /* __OS_H__ */
