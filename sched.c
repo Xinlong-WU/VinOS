@@ -1,31 +1,63 @@
 #include "os.h"
 #include "uart.h"
 
-uint8_t task_stack[STACK_SIZE];
-struct context ctx_task;
+uint8_t task_stack[MAX_TASKS][STACK_SIZE];
+struct context ctx_tasks[MAX_TASKS];
+
+/*
+ * _top is used to mark the max available position of ctx_tasks
+ * _current is used to point to the context of current task
+ */
+static int _top = 0;
+static int _current = -1;
 
 static void w_mscratch(reg_t x){
     asm volatile(" csrw mscratch, %0" :: "r" (x));
 }
 
-void user_task0(void){
-    print("Task 0 is Created");
-    while(1){
-        print("Task 0 is running...");
-        task_delay(1000);
-    }
-}
-
 void sched_init(){
     w_mscratch(0);
-
-    ctx_task.sp = (reg_t) &task_stack[STACK_SIZE - 1];
-    ctx_task.ra = (reg_t) user_task0;
 }
 
 void schedule(){
-    struct context *nextTask = &ctx_task;
+    if(_top <= 0){
+        panic("Num of task should be greater than zero!");
+        return;
+    }
+
+    _current = ( _current + 1) % _top;
+    struct context *nextTask = &(ctx_tasks[_current]);
     switch_to(nextTask);
+}
+
+/*
+ * DESCRIPTION
+ * 	Create a task.
+ * 	- start_routin: task routune entry
+ * RETURN VALUE
+ * 	0: success
+ * 	-1: if error occured
+ */
+int task_create(void (*start_routin)(void))
+{
+	if (_top < MAX_TASKS) {
+		ctx_tasks[_top].sp = (reg_t) &task_stack[_top][STACK_SIZE - 1];
+		ctx_tasks[_top].ra = (reg_t) start_routin;
+		_top++;
+		return 0;
+	} else {
+		return -1;
+	}
+}
+
+/*
+ * DESCRIPTION
+ * 	task_yield()  causes the calling task to relinquish the CPU and a new 
+ * 	task gets to run.
+ */
+void task_yield()
+{
+	schedule();
 }
 
 /*

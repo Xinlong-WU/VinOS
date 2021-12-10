@@ -35,28 +35,8 @@ void start_kernel(void)
 	print("-> init Multi Task...");
 	sched_init();
 	print("-> init Memoey...OK");
-	schedule();
-
-	printf("void -> %d\n", sizeof(void));
-	printf("char-> %d\n", sizeof(char));
-	printf("uint8_t -> %d\n", sizeof(uint8_t));
-	printf("short int-> %d\n", sizeof(short));
-	printf("int -> %d\n", sizeof(int));
-	printf("long long int-> %d\n", sizeof(long long int));
-	printf("float-> %d\n", sizeof(float));
-	printf("double-> %d\n", sizeof(double));
-	printf("long double-> %d\n", sizeof(long double));
 	
-	// char buffer[200];
-	while (1) {
-		getc();
-		// getLine(buffer, 200);
-		// if(strcpy(buffer,"shutdown") == 0){
-		// 	print("ok, shutdown.\nbye~");
-		// 	break;
-		// }
-		// char ch = getc();
-		// itoa(ch, buffer);
-		// print(buffer);
-	}; // stop here!
+	print("-> Run OS main func");
+	os_main();
+	task_yield();
 }

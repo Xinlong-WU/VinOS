@@ -22,6 +22,7 @@ SRCS_C = \
 	utils.c \
 	memory.c \
 	sched.c	\
+	user.c	\
 
 OBJS = $(SRCS_ASM:.S=.o)
 OBJS += $(SRCS_C:.c=.o)

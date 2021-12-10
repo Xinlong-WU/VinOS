@@ -51,9 +51,13 @@ struct context {
 
 extern int  task_create(void (*task)(void));
 extern void task_delay(volatile int count);
+extern void task_yield();
 /* defined in entry.S */
 extern void switch_to(struct context *next);
 
+extern void os_main();
+
+#define MAX_TASKS 10
 #define STACK_SIZE 1024
 
 #endif /* __OS_H__ */
