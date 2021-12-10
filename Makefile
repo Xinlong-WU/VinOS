@@ -14,12 +14,14 @@ OBJDUMP = ${CROSS_COMPILE}objdump
 SRCS_ASM = \
 	start.S \
 	memInfo.S \
+	entry.S \
 
 SRCS_C = \
 	kernel.c \
 	uart.c \
 	utils.c \
 	memory.c \
+	sched.c	\
 
 OBJS = $(SRCS_ASM:.S=.o)
 OBJS += $(SRCS_C:.c=.o)
@@ -61,8 +63,9 @@ code: all
 .PHONY : clean
 clean:
 	rm -rf ${BUILD_PATH}
-	rm -rf *.elf
-	rm -rf *.o
+	rm -f *.elf
+	rm -f *.o
+	rm -f *.bin
 
 qemu:
 	@${QEMU} -M ? | grep virt >/dev/null || exit

@@ -32,6 +32,11 @@ void start_kernel(void)
 	molloc_test();
 	print("-> init Memoey...OK");
 
+	print("-> init Multi Task...");
+	sched_init();
+	print("-> init Memoey...OK");
+	schedule();
+
 	printf("void -> %d\n", sizeof(void));
 	printf("char-> %d\n", sizeof(char));
 	printf("uint8_t -> %d\n", sizeof(uint8_t));
