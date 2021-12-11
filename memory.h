@@ -52,4 +52,6 @@ extern void page_test();
 void *malloc(size_t size);
 void free(void *ptr);
 
+void *memcpy(void *dest, const void *src, size_t n);
+
 #endif /* __MEMORY_H__ */

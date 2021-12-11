@@ -624,3 +624,12 @@ void molloc_test()
 
     printf("\n\n==============> END molloc_test <==============\n\n"); 
 }
+
+void *memcpy(void *dest, const void *src, size_t n)
+{
+    char *dp = dest;
+    const char *sp = src;
+    while (n--)
+        *dp++ = *sp++;
+    return dest;
+}
