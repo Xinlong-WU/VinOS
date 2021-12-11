@@ -6,9 +6,10 @@ struct taskInfo * tasks_info[MAX_TASKS];
 
 /*
  * _top is used to mark the max available position of ctx_tasks
- * _current is used to point to the context of current task
+ * _currentTaskAddr is used to point to the entry addr of current task
  */
 static int _top = 0;
+static struct taskInfo * _currentTaskAddr = 0x0;
 
 void dumpTasksList();
 
@@ -22,6 +23,8 @@ void sched_init(){
 
 
 struct taskInfo * popTask(){
+	if(_top == 0)
+		return NULL;
 	struct taskInfo * task = tasks_info[0];
 	if(task->priority != 0) 
 		task->priority--;
@@ -43,9 +46,9 @@ void schedule(){
         panic("Num of task should be greater than zero!");
         return;
     }
-    struct taskInfo * nextTask = popTask();
+    _currentTaskAddr = popTask();
 	// dumpTasksList();
-	struct context * ctx = &(nextTask->task_context);
+	struct context * ctx = &(_currentTaskAddr->task_context);
 	// printf("switch to task 0x%x\n",ctx);
     switch_to(ctx);
 }
@@ -86,7 +89,7 @@ int insertTask(struct taskInfo * newTask){
  * 	0: success
  * 	-1: if error occured
  */
-extern int  task_create(void (*task)(void* param),
+int  task_create(void (*task)(void* param),
                  void *param, uint8_t priority) {
 	struct taskInfo * newTask = malloc(sizeof(struct taskInfo));
 	newTask->taskId = _top;
@@ -123,4 +126,24 @@ void dumpTasksList(){
 		printf("[%d]{id:%d; priority:%d}\t",i,tasks_info[i]->taskId,tasks_info[i]->priority);
 	}
 	printf("\n");
+}
+
+void no_task_error(){
+	panic("There is no user task!");
+	return;
+}
+
+void task_exit(){
+	for(int i = 0; i < _top;){
+		if(tasks_info[i++] == _currentTaskAddr){
+			while(i < _top){
+				tasks_info[i - 1] = tasks_info[i];
+				i++;
+			}
+		}
+	}
+	_top--;
+	if(_top == 0)
+		task_create(no_task_error,NULL,0);
+	schedule();
 }
