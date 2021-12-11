@@ -11,7 +11,7 @@
 #include <stddef.h>
 #include <stdarg.h>
 
-#define KERNEL_VERSION "0.2.0"
+#define KERNEL_VERSION "0.2.4"
 
 /* task management */
 struct context {
@@ -49,7 +49,14 @@ struct context {
 	reg_t t6;
 };
 
-extern int  task_create(void (*task)(void));
+struct taskInfo{
+	uint8_t taskId;
+	uint8_t priority;
+	struct context task_context;
+};
+
+extern int  task_create(void (*task)(void* param),
+                 void *param, uint8_t priority);
 extern void task_delay(volatile int count);
 extern void task_yield();
 /* defined in entry.S */
