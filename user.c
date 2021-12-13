@@ -14,7 +14,7 @@ void user_task0(void * param)
 		printf("Param of Task 0: %d\n\n", *pa);
 		*pa += 1;
 		task_delay(DELAY);
-		task_yield();
+		task_os();
 	}
 	task_exit();
 }
@@ -30,13 +30,13 @@ void user_task1(void * param)
 		printf("Param of Task 1: %d\n\n", *pa);
 		*pa -= 1;
 		task_delay(DELAY);
-		task_yield();
+		task_os();
 	}
 	task_exit();
 }
 
 /* NOTICE: DON'T LOOP INFINITELY IN main() */
-void os_main(void)
+void user_init()
 {
 	int * param1 = malloc(sizeof(int));
 	*param1 = 1;

@@ -35,8 +35,17 @@ void start_kernel(void)
 	print("-> init Multi Task...");
 	sched_init();
 	print("-> init Memoey...OK");
+
+	print("-> Now goto Kernel...");
+	task_os();
+}
+
+void kernel(){
+	user_init();
 	
-	print("-> Run OS main func");
-	os_main();
-	task_yield();
+	while(1){
+		printf("-> OS: Activate next task\n");
+		schedule();
+		printf("-> OS: Back to os now\n\n");
+	}
 }

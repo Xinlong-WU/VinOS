@@ -6,12 +6,17 @@ struct taskInfo * tasks_info[MAX_TASKS];
 
 /*
  * _top is used to mark the max available position of ctx_tasks
- * _currentTaskAddr is used to point to the entry addr of current task
+ * _currentTask is used to point to the entry addr of current task
  */
 static int _top = 0;
-static struct taskInfo * _currentTaskAddr = 0x0;
+static int _totalTaskCounter = 0;
+struct taskInfo * _currentTask = 0x0;
+struct taskInfo * _KernelTask = 0x0;
 
 void dumpTasksList();
+
+struct taskInfo * task_create(void (*task)(void* param),
+                 					 void *param, uint8_t priority);
 
 static void w_mscratch(reg_t x){
     asm volatile(" csrw mscratch, %0" :: "r" (x));
@@ -19,16 +24,21 @@ static void w_mscratch(reg_t x){
 
 void sched_init(){
     w_mscratch(0);
+	_KernelTask = task_create(kernel,NULL,0);
 }
 
 
 struct taskInfo * popTask(){
-	if(_top == 0)
+	if(_top == 1)
 		return NULL;
 	struct taskInfo * task = tasks_info[0];
 	if(task->priority != 0) 
 		task->priority--;
 	for(int i = 1; i < _top; i++){
+		// skip if taskId is 0
+		// kernel task should not be schedule
+		if(tasks_info[i]->taskId == 0)
+			continue;
 		if(task->priority <= tasks_info[i]->priority){
 			tasks_info[i - 1] = tasks_info[i];
 		}
@@ -39,18 +49,6 @@ struct taskInfo * popTask(){
 	}
 	tasks_info[_top - 1] = task;
 	return task;
-}
-
-void schedule(){
-    if(_top <= 0){
-        panic("Num of task should be greater than zero!");
-        return;
-    }
-    _currentTaskAddr = popTask();
-	// dumpTasksList();
-	struct context * ctx = &(_currentTaskAddr->task_context);
-	// printf("switch to task 0x%x\n",ctx);
-    switch_to(ctx);
 }
 
 /*
@@ -79,6 +77,17 @@ int insertTask(struct taskInfo * newTask){
 	}
 }
 
+void schedule(){
+    _currentTask = popTask();
+	if(_currentTask == NULL){
+		panic("ERROR: There is no task to be scheduled.\n");
+		return;
+	}
+	struct context * ctx = &(_currentTask->task_context);
+	// printf("switch to task 0x%x\n",ctx);
+    switch_to(ctx);
+}
+
 /*
  * DESCRIPTION
  * 	Create a task.
@@ -86,29 +95,31 @@ int insertTask(struct taskInfo * newTask){
  *  - param: the parameter of the task
  *	- priority: priority of the task
  * RETURN VALUE
- * 	0: success
- * 	-1: if error occured
+ * 	NULL error occured
  */
-int  task_create(void (*task)(void* param),
-                 void *param, uint8_t priority) {
+struct taskInfo * task_create(void (*task)(void* param),
+                 					 void *param, uint8_t priority) {
 	struct taskInfo * newTask = malloc(sizeof(struct taskInfo));
-	newTask->taskId = _top;
+	newTask->taskId = _totalTaskCounter++;
 	newTask->priority = priority;
 	newTask->task_context.sp = (reg_t) &task_stack[_top][STACK_SIZE - 1];
 	newTask->task_context.ra = (reg_t) task;
 	if(param != NULL)
 		newTask->task_context.a0 = (reg_t) param;
-	return insertTask(newTask);
+	return insertTask(newTask) == 0 ? newTask : NULL;
 }
 
-/*
- * DESCRIPTION
- * 	task_yield()  causes the calling task to relinquish the CPU and a new 
- * 	task gets to run.
- */
-void task_yield()
-{
-	schedule();
+void task_exit(){
+	for(int i = 0; i < _top;){
+		if(tasks_info[i++] == _currentTask){
+			while(i < _top){
+				tasks_info[i - 1] = tasks_info[i];
+				i++;
+			}
+		}
+	}
+	_top--;
+	task_os();
 }
 
 /*
@@ -120,30 +131,15 @@ void task_delay(volatile int count)
 	while (count--);
 }
 
+// switch back to os
+void task_os() {
+	switch_to(&(_KernelTask->task_context));
+}
+
 void dumpTasksList(){
 	printf("Task List: ");
 	for(int i = 0; i < _top; i++){
 		printf("[%d]{id:%d; priority:%d}\t",i,tasks_info[i]->taskId,tasks_info[i]->priority);
 	}
 	printf("\n");
-}
-
-void no_task_error(){
-	panic("There is no user task!");
-	return;
-}
-
-void task_exit(){
-	for(int i = 0; i < _top;){
-		if(tasks_info[i++] == _currentTaskAddr){
-			while(i < _top){
-				tasks_info[i - 1] = tasks_info[i];
-				i++;
-			}
-		}
-	}
-	_top--;
-	if(_top == 0)
-		task_create(no_task_error,NULL,0);
-	schedule();
 }

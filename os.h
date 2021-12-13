@@ -11,7 +11,7 @@
 #include <stddef.h>
 #include <stdarg.h>
 
-#define KERNEL_VERSION "0.2.4"
+#define KERNEL_VERSION "0.2.6"
 
 /* task management */
 struct context {
@@ -55,15 +55,22 @@ struct taskInfo{
 	struct context task_context;
 };
 
-extern int  task_create(void (*task)(void* param),
-                 void *param, uint8_t priority);
+extern struct taskInfo * _currentTask;
+extern struct taskInfo * _KernelTask;
+
+extern struct taskInfo * task_create(void (*task)(void* param),
+                 					 void *param, uint8_t priority);
 extern void task_delay(volatile int count);
-extern void task_yield();
 extern void task_exit();
+extern void task_os();
+extern void schedule();
+extern void sched_init();
 /* defined in entry.S */
 extern void switch_to(struct context *next);
 
-extern void os_main();
+extern void user_init();
+
+extern void kernel();
 
 #define MAX_TASKS 10
 #define STACK_SIZE 1024
