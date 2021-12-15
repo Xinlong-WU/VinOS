@@ -3,6 +3,8 @@
 
 #include "types.h"
 
+extern void uart_isr();
+
 /* uart */
 extern void uart_init();
 extern int putc(char ch);

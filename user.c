@@ -1,11 +1,11 @@
 #include "os.h"
 #include "uart.h"
 
-#define DELAY 1000
+#define DELAY 10000
 
 void user_task0(void * param)
 {
-	int i = 20;
+	int i = 100;
 	int * pa = (int *)param;
 	printf("Task 0: Created!\n");
 	printf("Param of Task 0: %d\n\n", *pa);
@@ -13,9 +13,9 @@ void user_task0(void * param)
 		printf("Task 0: Running...\n");
 		printf("Param of Task 0: %d\n\n", *pa);
 		*pa += 1;
-		if(i % 2){
-			trap_test();
-		}
+		// if(i % 2){
+		// 	trap_test();
+		// }
 		task_delay(DELAY);
 		task_os();
 	}
@@ -24,7 +24,7 @@ void user_task0(void * param)
 
 void user_task1(void * param)
 {
-	int i = 10;
+	int i = 100;
 	int * pa = (int *)param;
 	printf("Task 1: Created!\n");
 	printf("Param of Task 1: %d\n\n", *pa);

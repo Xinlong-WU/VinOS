@@ -1,8 +1,11 @@
 #include "trap.h"
 #include "uart.h"
 #include "riscv.h"
+#include "plic.h"
+#include "platform.h"
 
 extern void trap_vector();
+void external_interrupt_handler();
 
 void trap_init(){
     /*
@@ -26,7 +29,8 @@ reg_t trap_handler(reg_t epc, reg_t cause)
 			printf("timer interruption!\n");
 			break;
 		case M_External:
-			printf("external interruption!\n");
+			// printf("external interruption!\n");
+			external_interrupt_handler();
 			break;
 		default:
 			printf("unknown async exception!\n");
@@ -40,6 +44,20 @@ reg_t trap_handler(reg_t epc, reg_t cause)
 	}
 
 	return return_pc;
+}
+
+void external_interrupt_handler(){
+	int irq = plic_claim();
+	switch(irq){
+		default:
+			printf("unexpected interrupt irq = %d\n", irq);
+			break;
+		case UART0_IRQ:{
+			uart_isr();
+			plic_complete(irq);
+			break;
+		}
+	}
 }
 
 void trap_test()

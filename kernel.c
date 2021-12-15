@@ -40,6 +40,10 @@ void start_kernel(void)
 	trap_init();
 	print("-> init Tarp...OK");
 
+	print("-> init plic...");
+	plic_init();
+	print("-> init plic...OK");
+
 	print("-> Now goto Kernel...");
 	task_os();
 }

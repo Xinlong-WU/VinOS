@@ -68,10 +68,10 @@
 
 void uart_init(){
 
-    /* disable interrupts. */
-    uart_write_reg(IER, 0x00);
+	/* disable interrupts. */
+	uart_write_reg(IER, 0x00);
 
-    /*
+	/*
 	 * Setting baud rate. Just a demo here if we care about the divisor,
 	 * but for our purpose [QEMU-virt], this doesn't really do anything.
 	 *
@@ -87,12 +87,12 @@ void uart_init(){
 	 * split the value of 3(0x0003) into two bytes, DLL stores the low byte,
 	 * DLM stores the high byte.
 	 */
-    uint8_t lcr = uart_read_reg(LCR);
-    uart_write_reg(LCR, lcr | (1 << 7));
-    uart_write_reg(DLL, 0x03);
-    uart_write_reg(DLM, 0x00);
+	uint8_t lcr = uart_read_reg(LCR);
+	uart_write_reg(LCR, lcr | (1 << 7));
+	uart_write_reg(DLL, 0x03);
+	uart_write_reg(DLM, 0x00);
 
-    /*
+	/*
 	 * Continue setting the asynchronous data communication format.
 	 * - number of the word length: 8 bits
 	 * - number of stop bits：1 bit when word length is 8 bits
@@ -100,8 +100,14 @@ void uart_init(){
 	 * - no break control
 	 * - disabled baud latch
 	 */
-    lcr = 0;
-    uart_write_reg(LCR, lcr | (3 << 0));
+	lcr = 0;
+	uart_write_reg(LCR, lcr | (3 << 0));
+
+	/*
+	 * enable receive interrupts.
+	 */
+	uint8_t ier = uart_read_reg(IER);
+	uart_write_reg(IER, ier | (1 << 0));
 }
 
 int putc(char ch){
@@ -123,22 +129,38 @@ void print(string s){
 }
 
 char getc(){
-	while ((uart_read_reg(LSR) & LSR_RX_READY) == 0);
-	char ch = (char)uart_read_reg(RHR);
-	if(ch == '\r')
-		ch = '\n';
-	if(ch == 127)
-		ch = '\b';
+	if (uart_read_reg(LSR) & LSR_RX_READY){
+		char ch = (char)uart_read_reg(RHR);
+		if(ch == '\r')
+			ch = '\n';
+		if(ch == 127)
+			ch = '\b';
 
-	// write back
-	putc(ch);
-	if(ch == '\b'){
-		putc(' ');
-		putc('\b');
+		// write back
+		if(ch == '\b'){
+			putc(' ');
+			putc('\b');
+		}
+		return ch;
+	} else {
+		return '\0';
 	}
-		
-	return ch;
 }
+
+/*
+ * handle a uart interrupt, raised because input has arrived, called from trap.c.
+ */
+void uart_isr(){
+	while (1) {
+		char c = getc();
+		if (c == '\0') {
+			break;
+		} else {
+			putc(c);
+		}
+	}
+	
+} 
 
 void getLine(string strBuffer, int bufferSize){
 	if (bufferSize > 200)
@@ -295,4 +317,3 @@ void panic(char *s)
 	printf("\n");
 	while(1){};
 }
-
