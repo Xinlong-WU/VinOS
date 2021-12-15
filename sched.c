@@ -1,4 +1,6 @@
 #include "os.h"
+#include "sched.h"
+#include "types.h"
 #include "uart.h"
 
 uint8_t task_stack[MAX_TASKS][STACK_SIZE];
