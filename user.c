@@ -13,6 +13,9 @@ void user_task0(void * param)
 		printf("Task 0: Running...\n");
 		printf("Param of Task 0: %d\n\n", *pa);
 		*pa += 1;
+		if(i % 2){
+			trap_test();
+		}
 		task_delay(DELAY);
 		task_os();
 	}

@@ -36,6 +36,10 @@ void start_kernel(void)
 	sched_init();
 	print("-> init Memoey...OK");
 
+	print("-> init Tarp...");
+	trap_init();
+	print("-> init Tarp...OK");
+
 	print("-> Now goto Kernel...");
 	task_os();
 }
