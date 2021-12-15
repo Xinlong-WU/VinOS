@@ -2,6 +2,7 @@
 #include "sched.h"
 #include "types.h"
 #include "uart.h"
+#include "riscv.h"
 
 uint8_t task_stack[MAX_TASKS][STACK_SIZE];
 struct taskInfo * tasks_info[MAX_TASKS];
@@ -19,10 +20,6 @@ void dumpTasksList();
 
 struct taskInfo * task_create(void (*task)(void* param),
                  					 void *param, uint8_t priority);
-
-static void w_mscratch(reg_t x){
-    asm volatile(" csrw mscratch, %0" :: "r" (x));
-}
 
 void sched_init(){
     w_mscratch(0);
