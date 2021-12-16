@@ -48,10 +48,27 @@ reg_t trap_handler(reg_t epc, reg_t cause)
 			break;
 		}
 	} else {
-		/* Synchronous trap - exception */
-		printf("Sync exceptions!, code = %d\n", cause_code);
-		panic("OOPS! What can I do!");
-		//return_pc += 4;
+		/* Asynchronous trap - interrupt */
+		switch (cause_code) {
+		case Load_acc_Fault:{
+			// printf("software interruption!\n");
+			/*
+			 * acknowledge the software interrupt by clearing
+    		 * the MSIP bit in mip.
+			 */
+			reg_t id = r_mhartid();
+			*(uint32_t*)CLINT_MSIP(id) = 0;
+			task_exit();
+			schedule();
+			break;
+		}
+		default:
+			/* Synchronous trap - exception */
+			printf("Sync exceptions!, code = %d\n", cause_code);
+			panic("OOPS! What can I do!");
+			//return_pc += 4;
+			break;
+		}
 	}
 
 	return return_pc;

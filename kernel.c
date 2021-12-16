@@ -2,6 +2,8 @@
 
 #include "os.h"
 
+extern char* timefmt(struct time T);
+extern struct time now();
 extern void task_os();
 
 void start_kernel(void)
@@ -54,6 +56,7 @@ void start_kernel(void)
 	task_os();
 }
 
+extern int getTaskCounter();
 void kernel(){
 	user_init();
 	
@@ -61,5 +64,20 @@ void kernel(){
 		printf("-> OS: Activate next task\n");
 		task_yield();
 		printf("-> OS: Back to os now\n\n");
+		if(getTaskCounter() == 1){
+			printf("ERROR: there is no more task\n");
+			break;
+		}
 	}
+
+	printf("Show local time:\n");
+	while (1)
+	{
+		struct time T = now();
+		printf("\r");
+		printf("%s", timefmt(T));
+		
+		task_delay(10000);
+	}
+	
 }

@@ -28,10 +28,11 @@ void sched_init(){
 	w_mie(r_mie() | MIE_MSIE);
 }
 
+int getTaskCounter(){
+	return _top;
+}
 
 struct taskInfo * popTask(){
-	if(_top == 1)
-		return NULL;
 	struct taskInfo * task = tasks_info[0];
 	if(task->priority != 0) 
 		task->priority--;
@@ -48,7 +49,9 @@ struct taskInfo * popTask(){
 			return task;
 		}
 	}
-	tasks_info[_top - 1] = task;
+	// skip the last one task
+	// cause it is kernel task;
+	tasks_info[_top - 2] = task;
 	return task;
 }
 
@@ -85,7 +88,6 @@ void schedule(){
 		return;
 	}
 	struct context * ctx = &(_currentTask->task_context);
-	// printf("switch to task 0x%x\n",ctx);
     switch_to(ctx);
 }
 
@@ -120,6 +122,18 @@ void task_yield(){
 	*((uint32_t*)CLINT_MSIP(hartId)) = 1;
 }
 
+void task_exit(){
+	for(int i = 0; i < _top;){
+		if(tasks_info[i++] == _currentTask){
+			while(i < _top){
+				tasks_info[i - 1] = tasks_info[i];
+				i++;
+			}
+		}
+	}
+	_top--;
+	return;
+}
 
 /*
  * a very rough implementaion, just to consume the cpu

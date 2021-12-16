@@ -25,11 +25,7 @@ void timer_init(){
 void timer_handler() 
 {
     _tick++;
-	printf("tick: %d\n", _tick);
-    // struct time T = now();
-    
-    // printf("\r");
-    // printf("%s", timefmt(T));
+	// printf("tick: %d\n", _tick);
 	timer_load(TIMER_INTERVAL);
 
     if(_tick % 2)
