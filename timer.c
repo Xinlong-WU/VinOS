@@ -20,19 +20,18 @@ void timer_init(){
 
     /* enable machine-mode timer interrupts. */
     w_mie(r_mie() | MIE_MTIE);
-
-    /* enable machine-mode global interrupts. */
-    w_mstatus(r_mstatus() | MSTATUS_MIE);
 }
 
 void timer_handler() 
 {
     _tick++;
-	// printf("tick: %d\n", _tick);
-    struct time T = now();
+	printf("tick: %d\n", _tick);
+    // struct time T = now();
     
-    printf("\r");
-    printf("%s", timefmt(T));
-
+    // printf("\r");
+    // printf("%s", timefmt(T));
 	timer_load(TIMER_INTERVAL);
+
+    if(_tick % 2)
+        schedule();
 }

@@ -24,6 +24,8 @@ struct taskInfo * task_create(void (*task)(void* param),
 void sched_init(){
     w_mscratch(0);
 	_KernelTask = task_create(kernel,NULL,0);
+	/* enable machine-mode software interrupts. */
+	w_mie(r_mie() | MIE_MSIE);
 }
 
 
@@ -102,24 +104,22 @@ struct taskInfo * task_create(void (*task)(void* param),
 	newTask->taskId = _totalTaskCounter++;
 	newTask->priority = priority;
 	newTask->task_context.sp = (reg_t) &task_stack[_top][STACK_SIZE - 1];
-	newTask->task_context.ra = (reg_t) task;
+	newTask->task_context.pc = (reg_t) task;
 	if(param != NULL)
 		newTask->task_context.a0 = (reg_t) param;
 	return insertTask(newTask) == 0 ? newTask : NULL;
 }
 
-void task_exit(){
-	for(int i = 0; i < _top;){
-		if(tasks_info[i++] == _currentTask){
-			while(i < _top){
-				tasks_info[i - 1] = tasks_info[i];
-				i++;
-			}
-		}
-	}
-	_top--;
-	task_os();
+/*
+ * DESCRIPTION
+ * 	task_yield()  causes the calling task to relinquish the CPU and a new 
+ * 	task gets to run.
+ */
+void task_yield(){
+	int hartId = r_mhartid();
+	*((uint32_t*)CLINT_MSIP(hartId)) = 1;
 }
+
 
 /*
  * a very rough implementaion, just to consume the cpu

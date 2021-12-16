@@ -2,6 +2,8 @@
 
 #include "os.h"
 
+extern void task_os();
+
 void start_kernel(void)
 {
 	uart_init();
@@ -57,7 +59,7 @@ void kernel(){
 	
 	while(1){
 		printf("-> OS: Activate next task\n");
-		schedule();
+		task_yield();
 		printf("-> OS: Back to os now\n\n");
 	}
 }

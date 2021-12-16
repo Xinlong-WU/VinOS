@@ -4,6 +4,7 @@
 #include "plic.h"
 #include "platform.h"
 #include "timer.h"
+#include "sched.h"
 
 extern void trap_vector();
 void external_interrupt_handler();
@@ -23,9 +24,17 @@ reg_t trap_handler(reg_t epc, reg_t cause)
 	if (cause & (1 << (MXLEN - 1))) {
 		/* Asynchronous trap - interrupt */
 		switch (cause_code) {
-		case M_SoftWare:
-			printf("software interruption!\n");
+		case M_SoftWare:{
+			// printf("software interruption!\n");
+			/*
+			 * acknowledge the software interrupt by clearing
+    		 * the MSIP bit in mip.
+			 */
+			reg_t id = r_mhartid();
+			*(uint32_t*)CLINT_MSIP(id) = 0;
+			schedule();
 			break;
+		}
 		case M_Timer:
 			// printf("timer interruption!\n");
 			timer_handler();

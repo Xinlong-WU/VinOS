@@ -16,7 +16,7 @@
 #include <stddef.h>
 #include <stdarg.h>
 
-#define KERNEL_VERSION "0.4"
+#define KERNEL_VERSION "0.5"
 
 extern void user_init();
 
