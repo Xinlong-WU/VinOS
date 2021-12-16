@@ -19,11 +19,12 @@ struct taskInfo * _KernelTask = 0x0;
 void dumpTasksList();
 
 struct taskInfo * task_create(void (*task)(void* param),
-                 					 void *param, uint8_t priority);
+								void *param, uint8_t priority,
+								uint32_t timeslice);
 
 void sched_init(){
     w_mscratch(0);
-	_KernelTask = task_create(kernel,NULL,0);
+	_KernelTask = task_create(kernel,NULL,0,1);
 	/* enable machine-mode software interrupts. */
 	w_mie(r_mie() | MIE_MSIE);
 }
@@ -81,6 +82,14 @@ int insertTask(struct taskInfo * newTask){
 	}
 }
 
+static uint32_t tickCounter = 0;
+void tick_schedule(){
+	if(_tick - tickCounter >= _currentTask->timeslice){
+		tickCounter = _tick;
+		schedule();
+	}
+}
+
 void schedule(){
     _currentTask = popTask();
 	if(_currentTask == NULL){
@@ -97,14 +106,16 @@ void schedule(){
  * 	- task: task entry
  *  - param: the parameter of the task
  *	- priority: priority of the task
+ * 	- timeslice: timeslice for eact exec, min value is 1
  * RETURN VALUE
  * 	NULL error occured
  */
 struct taskInfo * task_create(void (*task)(void* param),
-                 					 void *param, uint8_t priority) {
+						void *param, uint8_t priority, uint32_t timeslice) {
 	struct taskInfo * newTask = malloc(sizeof(struct taskInfo));
 	newTask->taskId = _totalTaskCounter++;
 	newTask->priority = priority;
+	newTask->timeslice = timeslice == 0 ? 1 : timeslice;
 	newTask->task_context.sp = (reg_t) &task_stack[_top][STACK_SIZE - 1];
 	newTask->task_context.pc = (reg_t) task;
 	if(param != NULL)

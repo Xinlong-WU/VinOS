@@ -48,6 +48,7 @@ struct context {
 struct taskInfo{
 	uint8_t taskId;
 	uint8_t priority;
+	uint32_t timeslice;
 	struct context task_context;
 };
 
@@ -55,11 +56,12 @@ extern struct taskInfo * _currentTask;
 extern struct taskInfo * _KernelTask;
 
 extern struct taskInfo * task_create(void (*task)(void* param),
-                 					 void *param, uint8_t priority);
+							void *param, uint8_t priority, uint32_t timeslice);
 extern void task_delay(volatile int count);
 extern void task_yield();
 extern void task_exit();
 extern void schedule();
+extern void tick_schedule();
 extern void sched_init();
 /* defined in entry.S */
 extern void switch_to(struct context *next);

@@ -28,6 +28,5 @@ void timer_handler()
 	// printf("tick: %d\n", _tick);
 	timer_load(TIMER_INTERVAL);
 
-    if(_tick % 2)
-        schedule();
+    tick_schedule();
 }

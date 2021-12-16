@@ -5,7 +5,7 @@
 
 void user_task0(void * param)
 {
-	int i = 10;
+	int i = 50;
 	int * pa = (int *)param;
 	printf("Task 0: Created!\n");
 	printf("Param of Task 0: %d\n\n", *pa);
@@ -21,7 +21,7 @@ void user_task0(void * param)
 
 void user_task1(void * param)
 {
-	int i = 10;
+	int i = 50;
 	int * pa = (int *)param;
 	printf("Task 1: Created!\n");
 	printf("Param of Task 1: %d\n\n", *pa);
@@ -42,7 +42,7 @@ void user_init()
 	*param1 = 1;
 	int * param2 = malloc(sizeof(int));
 	*param2 = 20;
-	task_create(user_task0,param1,1);
-	task_create(user_task1,param2,1);
+	task_create(user_task0,param1,1,2);
+	task_create(user_task1,param2,1,3);
 }
 
