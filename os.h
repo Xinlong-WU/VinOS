@@ -8,12 +8,15 @@
 #include "memory.h"
 #include "sched.h"
 #include "trap.h"
+#include "timer.h"
+#include "riscv.h"
+#include "plic.h"
 
 
 #include <stddef.h>
 #include <stdarg.h>
 
-#define KERNEL_VERSION "0.3"
+#define KERNEL_VERSION "0.4"
 
 extern void user_init();
 

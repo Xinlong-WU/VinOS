@@ -1,5 +1,7 @@
 #include "utils.h"
 #include "types.h"
+#include "timer.h"
+
 string itoa(int num,string arr){
     int length = 0;
     int tmp = num;
@@ -70,4 +72,47 @@ int strcpy(string str1,string str2){
     }
 
     return res;
+}
+
+char timeStr[9] = "00:00:00";
+
+char* timefmt(struct time T){
+    char * str = "12:00:00";
+    itoa(T.hour,str);
+    if(T.hour)
+        if(T.hour<10)
+            timeStr[1]=str[0];
+        else{
+            timeStr[0] = str[0];
+            timeStr[1] = str[1];
+        }
+
+    itoa(T.minit,str);
+    if(T.minit)
+        if(T.minit>10){
+            timeStr[3] = str[0];
+            timeStr[4] = str[1];
+        }
+        else
+            timeStr[4]=str[0];
+
+    itoa(T.second,str);
+    if(T.second)
+        if(T.second>10){
+            timeStr[6] = str[0];
+            timeStr[7] = str[1];
+        }
+        else
+            timeStr[7]=str[0];
+    
+    return timeStr;
+}
+
+struct time now(){
+    const uint32_t timestamp = _tick;
+    struct time T;
+    T.hour = (timestamp / (60 * 60)) % 24;
+    T.minit = ((timestamp % (60 * 60)) / 60) % 60;
+    T.second = timestamp % 60;
+    return T;
 }

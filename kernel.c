@@ -44,6 +44,10 @@ void start_kernel(void)
 	plic_init();
 	print("-> init plic...OK");
 
+	print("-> init Timer...");
+	timer_init();
+	print("-> init Timer...OK");
+
 	print("-> Now goto Kernel...");
 	task_os();
 }

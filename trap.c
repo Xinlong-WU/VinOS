@@ -3,6 +3,7 @@
 #include "riscv.h"
 #include "plic.h"
 #include "platform.h"
+#include "timer.h"
 
 extern void trap_vector();
 void external_interrupt_handler();
@@ -26,7 +27,8 @@ reg_t trap_handler(reg_t epc, reg_t cause)
 			printf("software interruption!\n");
 			break;
 		case M_Timer:
-			printf("timer interruption!\n");
+			// printf("timer interruption!\n");
+			timer_handler();
 			break;
 		case M_External:
 			// printf("external interruption!\n");
