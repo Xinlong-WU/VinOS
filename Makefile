@@ -1,9 +1,20 @@
 BUILD_PATH = ./build
 
 CROSS_COMPILE = riscv64-unknown-elf-
-CFLAGS = -nostdlib -fno-builtin -march=rv32ima -mabi=ilp32 -g -Wall
+CFLAGS32 = -nostdlib -fno-builtin -march=rv32ima -mabi=ilp32 -g -Wall -D RV32
+CFLAGS64 = -nostdlib -fno-builtin -march=rv64ima -mabi=lp64 -g -Wall -mcmodel=medany -D RV64
+CFLAGS := ${CFLAGS64}
 
-QEMU = qemu-system-riscv32
+QEMU32 = qemu-system-riscv32
+QEMU64 = qemu-system-riscv64
+QEMU := ${QEMU64}
+
+ifeq (${arch}, rv32)
+CFLAGS := ${CFLAGS32}
+QEMU := ${QEMU32}
+else
+arch := rv64
+endif
 QFLAGS = -nographic -smp 1 -machine virt -bios none
 
 GDB = gdb-multiarch
@@ -32,9 +43,7 @@ OBJS += $(SRCS_C:.c=.o)
 
 .DEFAULT_GOAL := all
 all: os.elf
-	# @[ -d "${BUILD_PATH}" ] || mkdir ${BUILD_PATH}
-	# @mv *.o ${BUILD_PATH}/
-	# @mv *.bin ${BUILD_PATH}/
+	@echo "Build Arch: ${arch}"
 
 # start.o must be the first in dependency!
 os.elf: ${OBJS}

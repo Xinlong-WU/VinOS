@@ -11,6 +11,10 @@ typedef char* string;
 /*
  * RISCV32: register is 32bits width
  */ 
+#ifdef RV32
 typedef uint32_t reg_t;
+#else
+typedef uint64_t reg_t;
+#endif
 
 #endif /* __TYPES_H__ */

@@ -82,7 +82,11 @@ int insertTask(struct taskInfo * newTask){
 	}
 }
 
+#ifdef RV32
 static uint32_t tickCounter = 0;
+#else
+static uint64_t tickCounter = 0;
+#endif
 void tick_schedule(){
 	if(_tick - tickCounter >= _currentTask->timeslice){
 		tickCounter = _tick;

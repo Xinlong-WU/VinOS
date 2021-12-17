@@ -6,6 +6,7 @@
 /*
  * Following global vars are defined in mem.S
  */
+#ifdef RV32
 extern uint32_t TEXT_START;
 extern uint32_t TEXT_END;
 extern uint32_t DATA_START;
@@ -16,6 +17,19 @@ extern uint32_t BSS_START;
 extern uint32_t BSS_END;
 extern uint32_t HEAP_START;
 extern uint32_t HEAP_SIZE;
+
+#else
+extern uint64_t TEXT_START;
+extern uint64_t TEXT_END;
+extern uint64_t DATA_START;
+extern uint64_t DATA_END;
+extern uint64_t RODATA_START;
+extern uint64_t RODATA_END;
+extern uint64_t BSS_START;
+extern uint64_t BSS_END;
+extern uint64_t HEAP_START;
+extern uint64_t HEAP_SIZE;
+#endif
 
 #define PAGE_SIZE 4096
 #define PAGE_ORDER 12

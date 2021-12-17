@@ -6,9 +6,15 @@
  * _alloc_end points to the actual end address of heap pool
  * _num_pages holds the actual max number of pages we can allocate.
  */
-static uint32_t _alloc_start = 0;
-static uint32_t _alloc_end = 0;
-static uint32_t _num_pages = 0;
+#ifdef RV32
+    static uint32_t _alloc_start = 0;
+    static uint32_t _alloc_end = 0;
+    static uint32_t _num_pages = 0;
+#else
+	static uint64_t _alloc_start = 0;
+    static uint64_t _alloc_end = 0;
+    static uint64_t _num_pages = 0;
+#endif
 
 static inline void _clear(struct Page *page)
 {
@@ -52,7 +58,11 @@ static inline int _is_malloced(struct Page *page)
 
 static inline int _get_page_index_from_memory(void * p)
 {
-    return ((uint32_t)p - _alloc_start)/ PAGE_SIZE;
+#ifdef RV32
+	return ((uint32_t)p - _alloc_start)/ PAGE_SIZE;
+#else
+	return ((uint64_t)p - _alloc_start)/ PAGE_SIZE;
+#endif
 }
 
 static inline struct Page * _get_page_table()
@@ -227,7 +237,11 @@ void page_free(void *p){
     /*
 	 * Assert (TBD) if p is invalid
 	 */
+#ifdef RV32
 	if (!p || (uint32_t)p < _alloc_start ||(uint32_t)p >= _alloc_end) {
+#else
+	if (!p || (uint64_t)p < _alloc_start ||(uint64_t)p >= _alloc_end) {
+#endif
         panic("Memory Panic: Con't free this memory");
 		return;
 	}
@@ -465,7 +479,11 @@ void free(void *ptr){
     /*
 	 * Assert (TBD) if p is invalid
 	 */
+#ifdef RV32
 	if (!ptr || (uint32_t)ptr < _alloc_start ||(uint32_t)ptr >= _alloc_end) {
+#else
+	if (!ptr || (uint64_t)ptr < _alloc_start ||(uint64_t)ptr >= _alloc_end) {
+#endif
         panic("Memory Panic: Con't free this memory");
 		return;
 	}
