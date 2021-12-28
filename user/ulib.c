@@ -115,6 +115,15 @@ memmove(void *vdst, const void *vsrc, int n)
   return vdst;
 }
 
+void * strconcat(void *vdst, const void *src1, const void *src2){
+  int src1Len = strlen(src1);
+  int src2Len = strlen(src2);
+  memmove(vdst, src1, src1Len);
+  memmove(vdst+src1Len, src2, src2Len+1);
+
+  return vdst;
+}
+
 int
 memcmp(const void *s1, const void *s2, uint n)
 {
