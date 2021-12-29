@@ -4,19 +4,28 @@
 #include "kernel/fs.h"
 #include "kernel/fcntl.h"
 
-char * fmtpath(char const * path){
-    static char buf[DIRSIZ+1];
-    memmove(buf, path, strlen(path));
-    char *p = buf+strlen(buf);
-    if(*p != '/'){
+char * fmtpath(char * path){
+    char *p = path+strlen(path);
+    if(*(p-1) != '/'){
         *p = '/';
         *(p+1) = '\0';
     }
-    return buf;
+    return path;
+}
+
+void removeFileName(char * path){
+    char *p;
+
+    // Find first character after last slash.
+    for(p=path+strlen(path); p >= path && *p != '/'; p--)
+        ;
+    p++;
+    *(p) = '\0';
+    return;
 }
 
 void find(int fd,char const * path){
-    char buf[512];
+    char * buf = malloc(sizeof(char)*100);
     struct dirent de;
     struct stat st;
     int subfd;
@@ -28,11 +37,12 @@ void find(int fd,char const * path){
         return;
     }
 
+    if(fstat(fd, &st) < 0){
+        printf("Error: cannot stat %s\n", path);
+        return;
+    }
+
     while(read(fd, &de, sizeof(de)) == sizeof(de)){
-        if(fstat(fd, &st) < 0){
-            printf("Error: cannot stat %s\n", path);
-            return;
-        }
 
         if(de.inum == 0)
             continue;
@@ -59,21 +69,24 @@ void find(int fd,char const * path){
 
         printf("%s \n",buf);
     }
+    free(buf);
 }
 
 int main(int argc, char const *argv[])
 {
     int fd;
+    char * path = malloc(sizeof(char)*100);
     if (argc < 2)
     {
-        fd = open("./",O_RDONLY);
-        find(fd,"./");
+        path = memmove(path,"./",strlen("./"));
     }
     else
     {
-        fd = open(argv[1],O_RDONLY);
-        find(fd,fmtpath(argv[1]));
+        path = memmove(path,argv[1],strlen(argv[1]));
     }
+    fd = open(path,O_RDONLY);
+    find(fd,fmtpath(path));
+    free(path);
     close(fd);
     exit(0);
 }

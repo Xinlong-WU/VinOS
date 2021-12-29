@@ -137,7 +137,7 @@ UPROGS=\
 	$U/_find\
 
 fs.img: mkfs/mkfs README $(UPROGS)
-	mkfs/mkfs fs.img README $(UPROGS)
+	mkfs/mkfs fs.img README $(UPROGS) findtest
 
 -include kernel/*.d user/*.d
 

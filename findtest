@@ -1,0 +1,3 @@
+mkdir tesst
+mkdir tesst/t
+echo > tesst/b
