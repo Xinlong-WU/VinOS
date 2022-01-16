@@ -95,3 +95,25 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+extern char* syscallName[];
+
+uint64
+sys_trace(void)
+{
+  uint32 mask;
+  struct proc *p;
+
+  argint(0,(int*)&mask);
+  p = myproc();
+  p->tracemask = mask;
+
+  int count = 0;
+  while (count++ < 22){
+    mask>>=1;
+    if(mask&1){
+      printf("syscall %s will be tracing\n",syscallName[count]);
+    }
+  }
+  return 0;
+}
